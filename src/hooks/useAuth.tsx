@@ -19,19 +19,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   async function loadProfile(userId: string): Promise<Profile | null> {
-    const { data } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
-    const p = (data as Profile) ?? null;
+    const { data }: any = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
+    const p = (data as Profile | null) ?? null;
     setProfile(p);
     return p;
   }
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data }) => {
-      setSession(data.session);
-      if (data.session) await loadProfile(data.session.user.id);
+    supabase.auth.getSession().then(async (res: any) => {
+      setSession(res.data.session);
+      if (res.data.session) await loadProfile(res.data.session.user.id);
       setLoading(false);
     });
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
+    const { data: sub }: any = supabase.auth.onAuthStateChange((_e: any, s: any) => {
       setSession(s);
       if (s) loadProfile(s.user.id); else setProfile(null);
     });

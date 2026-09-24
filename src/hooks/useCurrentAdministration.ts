@@ -5,8 +5,13 @@ import type { Administration } from '../types/models';
 export function useCurrentAdministration() {
   const [administration, setAdministration] = useState<Administration | null>(null);
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    getCurrentAdministration().then(setAdministration).finally(() => setLoading(false));
+    getCurrentAdministration()
+      .then((admin) => setAdministration(admin))
+      .catch(() => setAdministration(null))
+      .finally(() => setLoading(false));
   }, []);
+
   return { administration, loading };
 }

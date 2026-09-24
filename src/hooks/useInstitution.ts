@@ -8,10 +8,12 @@ export function useInstitution() {
     official_website: null, contact_email: null,
     whatsapp_display: null, whatsapp_intl: null,
   });
+
   useEffect(() => {
-    supabase.from('institution_settings').select('*').limit(1).then(({ data }) => {
-      if (data?.[0]) setSettings((s) => ({ ...s, ...data[0] }));
+    supabase.from('institution_settings').select('*').limit(1).then(({ data }: any) => {
+      if (data && data[0]) setSettings((s) => ({ ...s, ...data[0] }));
     });
   }, []);
+
   return { settings };
 }
