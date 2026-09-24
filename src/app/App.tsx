@@ -1,16 +1,14 @@
-import { Outlet } from 'react-router-dom'
+import { RouterProvider } from 'react-router-dom';
+import { AuthProvider } from '../hooks/useAuth';
+import { ToastProvider } from '../components/ui';
+import { router } from './router';
 
-function App() {
+export default function App() {
   return (
-    <div>
-      <header>
-        <h1>SUG Digital</h1>
-        <p>Federal University Dutse</p>
-      </header>
-
-      <Outlet />
-    </div>
-  )
+    <AuthProvider>
+      <ToastProvider>
+        <RouterProvider router={router} />
+      </ToastProvider>
+    </AuthProvider>
+  );
 }
-
-export default App
