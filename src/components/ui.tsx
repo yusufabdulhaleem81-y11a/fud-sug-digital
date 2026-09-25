@@ -232,8 +232,8 @@ export function Timeline({ items }: { items: TlItem[] }) {
 }
 
 /* ── Meta grid ── */
-export function MetaGrid({ children }: { children: ReactNode }) {
-  return <div className="meta-grid">{children}</div>;
+export function MetaGrid({ className, children }: { className?: string; children: ReactNode }) {
+  return <div className={cn('meta-grid', className)}>{children}</div>;
 }
 export function MetaCell({ label, children }: { label: string; children: ReactNode }) {
   return <div className="meta-cell"><small>{label}</small><b>{children}</b></div>;
