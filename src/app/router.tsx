@@ -7,6 +7,10 @@ import Home from '../pages/public/Home';
 import Administrations from '../pages/public/Administrations';
 import AdministrationDetail from '../pages/public/AdministrationDetail';
 import History from '../pages/public/History';
+import AchievementsPublic from '../pages/public/AchievementsPublic';
+import ProjectsPublic from '../pages/public/ProjectsPublic';
+import Updates from '../pages/public/Updates';
+import EventsPublic from '../pages/public/EventsPublic';
 import Login from '../pages/auth/Login';
 import NotFound from '../pages/NotFound';
 
@@ -22,6 +26,15 @@ import DirectivesPanel from '../pages/shared/DirectivesPanel';
 import EscalationsPanel from '../pages/shared/EscalationsPanel';
 import InterventionsPanel from '../pages/shared/InterventionsPanel';
 import ProfilePage from '../pages/shared/ProfilePage';
+import RequestsPanel from '../pages/shared/RequestsPanel';
+import ProposalsPanel from '../pages/shared/ProposalsPanel';
+import ProjectsPanel from '../pages/shared/ProjectsPanel';
+import AchievementsPanel from '../pages/shared/AchievementsPanel';
+import PostsPanel from '../pages/shared/PostsPanel';
+import EventsPanel from '../pages/shared/EventsPanel';
+import TransitionPanel from '../pages/shared/TransitionPanel';
+import NotificationsPanel from '../pages/shared/NotificationsPanel';
+import AnalyticsPanel from '../pages/shared/AnalyticsPanel';
 
 import StudentDashboard from '../pages/student/StudentDashboard';
 import NewReport from '../pages/student/NewReport';
@@ -37,21 +50,19 @@ import AdminDashboard from '../pages/admin/AdminDashboard';
 const ph = (title: string, phase: string) => <PhasePlaceholder title={title} phase={phase} />;
 
 export const router = createBrowserRouter([
-  // ---------- PUBLIC ----------
   { element: <PublicLayout />, children: [
     { path: '/', element: <Home /> },
     { path: '/history', element: <History /> },
     { path: '/administrations', element: <Administrations /> },
     { path: '/administrations/:session', element: <AdministrationDetail /> },
-    { path: '/achievements', element: ph('Public Achievements', 'Phase E') },
-    { path: '/projects', element: ph('Public Projects', 'Phase E') },
-    { path: '/updates', element: ph('Updates & Announcements', 'Phase E') },
-    { path: '/events', element: ph('Events', 'Phase E') },
+    { path: '/achievements', element: <AchievementsPublic /> },
+    { path: '/projects', element: <ProjectsPublic /> },
+    { path: '/updates', element: <Updates /> },
+    { path: '/events', element: <EventsPublic /> },
     { path: '/about', element: ph('About SUG Digital', 'Phase H') },
     { path: '*', element: <NotFound /> },
   ]},
 
-  // ---------- AUTH ----------
   { path: '/login', element: <Login /> },
   { path: '/student/login', element: <Navigate to="/login" replace /> },
   { path: '/exco/login', element: <Navigate to="/login" replace /> },
@@ -59,7 +70,6 @@ export const router = createBrowserRouter([
   { path: '/president/login', element: <Navigate to="/login" replace /> },
   { path: '/admin/login', element: <Navigate to="/login" replace /> },
 
-  // ---------- STUDENT ----------
   { path: '/student', element: <RequireRole roles={['student']}><PortalLayout portal="student" /></RequireRole>, children: [
     { path: 'dashboard', element: <StudentDashboard /> },
     { path: 'reports', element: <StudentReports /> },
@@ -69,13 +79,12 @@ export const router = createBrowserRouter([
     { path: 'complaints/:id', element: <CaseDetail kind="complaint" mode="student" /> },
     { path: 'suggestions', element: <StudentSuggestions /> },
     { path: 'requests', element: ph('My Requests', 'Phase D') },
-    { path: 'notifications', element: ph('Notifications', 'Phase G') },
-    { path: 'posts', element: ph('Posts', 'Phase E') },
-    { path: 'events', element: ph('Events', 'Phase E') },
+    { path: 'notifications', element: <NotificationsPanel /> },
+    { path: 'posts', element: <Updates /> },
+    { path: 'events', element: <EventsPublic /> },
     { path: 'profile', element: <ProfilePage /> },
   ]},
 
-  // ---------- EXCO ----------
   { path: '/exco', element: <RequireRole roles={['exco', 'vp', 'president']}><PortalLayout portal="exco" /></RequireRole>, children: [
     { path: 'dashboard', element: <ExcoDashboard /> },
     { path: 'reports', element: <CaseInbox kind="report" scope="assigned" /> },
@@ -86,17 +95,17 @@ export const router = createBrowserRouter([
     { path: 'tasks', element: <TasksPanel mode="officer" /> },
     { path: 'monthly-reports', element: <MonthlyReportsPanel mode="officer" /> },
     { path: 'directives', element: <DirectivesPanel mode="officer" /> },
-    { path: 'requests', element: ph('Requests', 'Phase D') },
-    { path: 'proposals', element: ph('Proposals', 'Phase D') },
-    { path: 'notifications', element: ph('Notifications', 'Phase G') },
+    { path: 'requests', element: <RequestsPanel mode="officer" /> },
+    { path: 'proposals', element: <ProposalsPanel mode="officer" /> },
+    { path: 'achievements', element: <AchievementsPanel mode="officer" /> },
+    { path: 'posts', element: <PostsPanel /> },
+    { path: 'events', element: <EventsPanel /> },
+    { path: 'notifications', element: <NotificationsPanel /> },
     { path: 'messages', element: ph('Messages', 'Phase G') },
     { path: 'documents', element: ph('Documents', 'Phase G') },
-    { path: 'posts', element: ph('Posts', 'Phase E') },
-    { path: 'events', element: ph('Events', 'Phase E') },
     { path: 'profile', element: <ProfilePage /> },
   ]},
 
-  // ---------- VP ----------
   { path: '/vp', element: <RequireRole roles={['vp', 'president']}><PortalLayout portal="vp" /></RequireRole>, children: [
     { path: 'dashboard', element: <VpDashboard /> },
     { path: 'reports', element: <CaseInbox kind="report" scope="administration" /> },
@@ -105,11 +114,10 @@ export const router = createBrowserRouter([
     { path: 'tasks', element: <TasksPanel mode="leadership" /> },
     { path: 'coordination', element: <TasksPanel mode="leadership" /> },
     { path: 'escalations', element: <EscalationsPanel /> },
-    { path: 'notifications', element: ph('Notifications', 'Phase G') },
+    { path: 'notifications', element: <NotificationsPanel /> },
     { path: 'profile', element: <ProfilePage /> },
   ]},
 
-  // ---------- PRESIDENT ----------
   { path: '/president', element: <RequireRole roles={['president']}><PortalLayout portal="president" /></RequireRole>, children: [
     { path: 'dashboard', element: <PresidentDashboard /> },
     { path: 'exco-management', element: <ExcoManagement /> },
@@ -120,22 +128,21 @@ export const router = createBrowserRouter([
     { path: 'complaints/:id', element: <CaseDetail kind="complaint" mode="president" /> },
     { path: 'suggestions', element: <SuggestionsPanel /> },
     { path: 'monthly-reports', element: <MonthlyReportsPanel mode="president" /> },
-    { path: 'requests', element: ph('Requests', 'Phase D') },
-    { path: 'proposals', element: ph('Proposals', 'Phase D') },
+    { path: 'requests', element: <RequestsPanel mode="president" /> },
+    { path: 'proposals', element: <ProposalsPanel mode="president" /> },
     { path: 'tasks', element: <TasksPanel mode="leadership" /> },
     { path: 'directives', element: <DirectivesPanel mode="president" /> },
     { path: 'escalations', element: <EscalationsPanel /> },
     { path: 'interventions', element: <InterventionsPanel /> },
-    { path: 'projects', element: ph('Projects', 'Phase E') },
-    { path: 'achievements', element: ph('Achievements', 'Phase E') },
-    { path: 'analytics', element: ph('Analytics', 'Phase H') },
-    { path: 'transition', element: ph('Transition & Handover', 'Phase F') },
+    { path: 'projects', element: <ProjectsPanel /> },
+    { path: 'achievements', element: <AchievementsPanel mode="president" /> },
+    { path: 'analytics', element: <AnalyticsPanel /> },
+    { path: 'transition', element: <TransitionPanel /> },
     { path: 'audit-logs', element: ph('Audit Logs', 'Phase H') },
-    { path: 'notifications', element: ph('Notifications', 'Phase G') },
+    { path: 'notifications', element: <NotificationsPanel /> },
     { path: 'profile', element: <ProfilePage /> },
   ]},
 
-  // ---------- ADMIN ----------
   { path: '/admin', element: <RequireRole roles={['admin', 'super_admin']}><PortalLayout portal="admin" /></RequireRole>, children: [
     { path: 'dashboard', element: <AdminDashboard /> },
     { path: 'administrations', element: <AdministrationsManager /> },
@@ -147,7 +154,7 @@ export const router = createBrowserRouter([
     { path: 'positions', element: ph('Positions', 'Phase H') },
     { path: 'routing', element: ph('Report Routing', 'Phase B part 2') },
     { path: 'verification', element: ph('Verification Policy', 'Phase B part 2') },
-    { path: 'notifications', element: ph('Notifications', 'Phase G') },
+    { path: 'notifications', element: <NotificationsPanel /> },
     { path: 'documents', element: ph('Documents', 'Phase G') },
     { path: 'settings', element: ph('Institution Settings', 'Phase H') },
     { path: 'audit-logs', element: ph('Audit Logs', 'Phase H') },

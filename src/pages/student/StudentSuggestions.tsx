@@ -6,7 +6,7 @@ import { timeAgo } from '../../utils/format';
 
 export default function StudentSuggestions() {
   const toast = useToast();
-  const [form, setForm] = useState({ title: '', description: '', anonymous: false });
+  const [form, setForm] = useState({ title: '', description: '', matric_no: '', faculty: '', phone: '', anonymous: false });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [ref, setRef] = useState<string | null>(null);
@@ -18,9 +18,12 @@ export default function StudentSuggestions() {
     e.preventDefault();
     setBusy(true); setError(null);
     try {
-      const res = await submitSuggestion(form);
+      const res = await submitSuggestion({
+        title: form.title, description: form.description, anonymous: form.anonymous,
+        matric_no: form.matric_no, faculty: form.faculty, phone: form.phone,
+      });
       setRef(res.reference_number);
-      setForm({ title: '', description: '', anonymous: false });
+      setForm({ title: '', description: '', matric_no: '', faculty: '', phone: '', anonymous: false });
       toast('Suggestion submitted');
       listMySuggestions().then(setItems);
     } catch (err: any) { setError(err.message); }
@@ -37,6 +40,19 @@ export default function StudentSuggestions() {
           <form onSubmit={onSubmit}>
             {error && <FormError>{error}</FormError>}
             <Field label="Title"><Input required minLength={5} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></Field>
+            {!form.anonymous && (
+              <div className="grid sm:grid-cols-3" style={{ gap: 0 }}>
+                <Field label="Matric number">
+                  <Input required value={form.matric_no} onChange={(e) => setForm({ ...form, matric_no: e.target.value })} />
+                </Field>
+                <Field label="Faculty">
+                  <Input required value={form.faculty} onChange={(e) => setForm({ ...form, faculty: e.target.value })} />
+                </Field>
+                <Field label="Phone (optional)">
+                  <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+                </Field>
+              </div>
+            )}
             <Field label="Your suggestion"><TextArea required minLength={20} rows={4} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></Field>
             <label className="check" style={{ marginBottom: 16 }}>
               <input type="checkbox" checked={form.anonymous} onChange={(e) => setForm({ ...form, anonymous: e.target.checked })} />

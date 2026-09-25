@@ -21,6 +21,10 @@ export interface CaseSummary {
   created_at: string;
   updated_at: string;
   resolved_at: string | null;
+  matric_no?: string | null;
+  faculty?: string | null;
+  department?: string | null;
+  phone?: string | null;
 }
 
 export interface CaseHistoryEntry {

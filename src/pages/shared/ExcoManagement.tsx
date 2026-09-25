@@ -4,7 +4,8 @@ import {
   getCurrentAdministration, listAllAdministrations, listDirectorates,
   listOfficers, listPositions,
 } from '../../services/administrationService';
-import { Badge, Button, Card, Field, PageHeader, inputClass, statusTone } from '../../components/ui';
+import ImageUpload from '../../components/ImageUpload';
+import { Avatar, Badge, Button, Card, Field, PageHeader, inputClass, statusTone } from '../../components/ui';
 import type { Administration, Directorate, OfficerRecord, Position } from '../../types/models';
 
 const EMPTY = {
@@ -19,6 +20,7 @@ export default function ExcoManagement() {
   const [directorates, setDirectorates] = useState<Directorate[]>([]);
   const [officers, setOfficers] = useState<OfficerRecord[]>([]);
   const [form, setForm] = useState(EMPTY);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [inviteResult, setInviteResult] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -56,6 +58,7 @@ export default function ExcoManagement() {
         phone: form.phone.trim() || undefined,
         biography: form.biography.trim() || undefined,
         start_date: form.start_date || undefined,
+        profile_photo_url: photoUrl ?? undefined,
       });
       setInviteResult(result.invited
         ? `${form.full_name.trim()} was invited by email and given EXCO access. Action recorded in the audit log.`
@@ -63,6 +66,7 @@ export default function ExcoManagement() {
           ? `Account created for ${form.full_name.trim()}. Temporary password (shown once): ${result.temp_password}`
           : `${form.full_name.trim()} already had an account — a new administration assignment was created, preserving their officer history.`);
       setForm((f) => ({ ...EMPTY, administration_id: f.administration_id }));
+      setPhotoUrl(null);
       setOfficers(await listOfficers(form.administration_id));
     } catch (err: any) {
       setError(err.message ?? 'Failed to add officer');
@@ -71,7 +75,8 @@ export default function ExcoManagement() {
 
   return (
     <div>
-      <PageHeader title="EXCO Management" subtitle="Add officers to an administration. Each assignment is preserved permanently in the officer's history." />
+      <PageHeader title="EXCO Management"
+        subtitle="Add officers with their photo. Each assignment is preserved permanently in the officer's history." />
 
       {error && <p className="form-err">{error}</p>}
       {inviteResult && <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-700">{inviteResult}</p>}
@@ -119,6 +124,10 @@ export default function ExcoManagement() {
               onChange={(e) => setForm({ ...form, start_date: e.target.value })} />
           </Field>
           <div className="sm:col-span-2">
+            <ImageUpload label="Profile picture (optional)" folder="officers"
+              previewUrl={photoUrl} onUploaded={setPhotoUrl} />
+          </div>
+          <div className="sm:col-span-2">
             <Field label="Biography (optional)">
               <textarea className={inputClass} rows={2} value={form.biography}
                 onChange={(e) => setForm({ ...form, biography: e.target.value })} />
@@ -137,9 +146,12 @@ export default function ExcoManagement() {
         {officers.length === 0 && <p className="p-4 text-sm text-stone-400">No officers yet for this administration.</p>}
         {officers.map((o) => (
           <div key={o.id} className="flex flex-col gap-1 p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="font-medium">{o.display_name}</p>
-              <p className="text-xs text-stone-500">{o.position?.title}{o.directorate ? ` · ${o.directorate.name}` : ''}</p>
+            <div className="fx" style={{ gap: 12 }}>
+              <Avatar name={o.display_name} src={o.profile_photo_url} size={44} />
+              <div>
+                <p className="font-medium">{o.display_name}</p>
+                <p className="text-xs text-stone-500">{o.position?.title}{o.directorate ? ` · ${o.directorate.name}` : ''}</p>
+              </div>
             </div>
             <Badge tone={statusTone(o.status)}>{o.status}</Badge>
           </div>

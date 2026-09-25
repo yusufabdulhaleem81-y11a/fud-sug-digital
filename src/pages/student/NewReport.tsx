@@ -7,7 +7,10 @@ import { Button, Field, FormError, Input, PageHeader, Panel, PanelBody, Select, 
 export default function NewReport() {
   const navigate = useNavigate();
   const toast = useToast();
-  const [form, setForm] = useState({ category: '', title: '', description: '', priority: 'Medium' });
+  const [form, setForm] = useState({
+    category: '', title: '', description: '', priority: 'Medium',
+    matric_no: '', faculty: '', department: '', phone: '',
+  });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [ref, setRef] = useState<string | null>(null);
@@ -18,7 +21,9 @@ export default function NewReport() {
     try {
       const res = await submitReport({
         title: form.title, description: form.description, category: form.category,
-        priority: form.priority.toLowerCase() as 'low' | 'medium' | 'high' | 'urgent',
+        priority: form.priority.toLowerCase() as any,
+        matric_no: form.matric_no, faculty: form.faculty,
+        department: form.department, phone: form.phone,
       });
       setRef(res.reference_number);
       toast('Report submitted');
@@ -32,13 +37,10 @@ export default function NewReport() {
       <div className="ticket">
         <PageHeader title="Report received" subtitle="Your report has been recorded and auto-routed to the right officer." />
         <Ticket reference={ref} onCopy={() => { navigator.clipboard.writeText(ref); toast('Reference copied'); }} />
-        <p className="mut small">
-          You will see responses and updates in the case timeline. Officers never see more of your
-          identity than the platform requires — anonymous mode is available for complaints.
-        </p>
+        <p className="mut small">Your faculty and department help the Union track which areas need the most attention.</p>
         <div className="fx mt16">
           <Button onClick={() => navigate('/student/reports')}>Go to my reports</Button>
-          <Button variant="ghost" onClick={() => { setRef(null); setForm({ category: '', title: '', description: '', priority: 'Medium' }); }}>
+          <Button variant="ghost" onClick={() => { setRef(null); setForm({ category: '', title: '', description: '', priority: 'Medium', matric_no: '', faculty: '', department: '', phone: '' }); }}>
             Submit another
           </Button>
         </div>
@@ -63,6 +65,24 @@ export default function NewReport() {
               <Input required minLength={5} maxLength={120} value={form.title}
                 placeholder="Short summary of the issue" onChange={(e) => setForm({ ...form, title: e.target.value })} />
             </Field>
+            <div className="grid gap-0 sm:grid-cols-2" style={{ gap: 0 }}>
+              <Field label="Matric number">
+                <Input required value={form.matric_no} placeholder="e.g. CSC/2021/0142"
+                  onChange={(e) => setForm({ ...form, matric_no: e.target.value })} />
+              </Field>
+              <Field label="Phone (optional)">
+                <Input value={form.phone} placeholder="080…"
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+              </Field>
+              <Field label="Faculty">
+                <Input required value={form.faculty} placeholder="e.g. Faculty of Science"
+                  onChange={(e) => setForm({ ...form, faculty: e.target.value })} />
+              </Field>
+              <Field label="Department">
+                <Input required value={form.department} placeholder="e.g. Computer Science"
+                  onChange={(e) => setForm({ ...form, department: e.target.value })} />
+              </Field>
+            </div>
             <Field label="Description">
               <TextArea required minLength={20} rows={5} value={form.description}
                 placeholder="Give the details the officer will need to act…"

@@ -7,7 +7,8 @@ import { Badge, Button, Field, FormError, Input, PageHeader, Panel, PanelBody, P
 import { timeAgo } from '../../utils/format';
 
 type Tab = 'mine' | 'lodge' | 'track';
-const EMPTY = { category: '', title: '', description: '', against: '', anonymous: false };
+const EMPTY = { category: '', title: '', description: '', against: '', anonymous: false,
+  matric_no: '', faculty: '', department: '', phone: '' };
 
 export default function StudentComplaints() {
   const toast = useToast();
@@ -25,11 +26,17 @@ export default function StudentComplaints() {
   async function onLodge(e: FormEvent) {
     e.preventDefault();
     setBusy(true); setError(null);
-    try {
-      const res = form.anonymous
-        ? await submitAnonymousComplaint(form)
-        : await submitIdentifiedComplaint(form);
-      setTicket({ reference_number: res.reference_number, tracking_code: form.anonymous ? res.tracking_code : undefined });
+        try {
+      if (form.anonymous) {
+        const res = await submitAnonymousComplaint({
+          title: form.title, description: form.description, category: form.category,
+          against: form.against, faculty: form.faculty, department: form.department,
+        });
+        setTicket({ reference_number: res.reference_number, tracking_code: res.tracking_code });
+      } else {
+        const res = await submitIdentifiedComplaint(form);
+        setTicket({ reference_number: res.reference_number });
+      }
       setForm(EMPTY);
       toast('Complaint submitted');
     } catch (err: any) { setError(err.message ?? 'Could not submit the complaint.'); }
@@ -58,7 +65,6 @@ export default function StudentComplaints() {
 
       {tab === 'mine' && (
         <>
-          <div className="banner">Anonymous complaints are never linked to your account — track them with the reference number and tracking code you received.</div>
           {items === null ? <div className="spin" /> : items.length === 0 ? (
             <Panel><PanelBody><p className="mut small">No identified complaints yet.</p></PanelBody></Panel>
           ) : (
@@ -82,8 +88,7 @@ export default function StudentComplaints() {
         ticket ? (
           <div className="ticket">
             <h3 className="serif">Complaint received</h3>
-            <Ticket reference={ticket.reference_number}
-              tracking={ticket.tracking_code}
+            <Ticket reference={ticket.reference_number} tracking={ticket.tracking_code}
               onCopy={() => { navigator.clipboard.writeText(`${ticket.reference_number} ${ticket.tracking_code ?? ''}`); toast('Copied'); }} />
           </div>
         ) : (
@@ -100,6 +105,26 @@ export default function StudentComplaints() {
                 <Field label="Title (optional)">
                   <Input value={form.title} placeholder="Short summary" onChange={(e) => setForm({ ...form, title: e.target.value })} />
                 </Field>
+                <div className="grid sm:grid-cols-2" style={{ gap: 0 }}>
+                  <Field label="Faculty">
+                    <Input required value={form.faculty} placeholder="e.g. Faculty of Science"
+                      onChange={(e) => setForm({ ...form, faculty: e.target.value })} />
+                  </Field>
+                  <Field label="Department">
+                    <Input required value={form.department} placeholder="e.g. Computer Science"
+                      onChange={(e) => setForm({ ...form, department: e.target.value })} />
+                  </Field>
+                </div>
+                {!form.anonymous && (
+                  <div className="grid sm:grid-cols-2" style={{ gap: 0 }}>
+                    <Field label="Matric number">
+                      <Input required value={form.matric_no} onChange={(e) => setForm({ ...form, matric_no: e.target.value })} />
+                    </Field>
+                    <Field label="Phone (optional)">
+                      <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+                    </Field>
+                  </div>
+                )}
                 <Field label="What happened?">
                   <TextArea required minLength={20} rows={5} value={form.description}
                     onChange={(e) => setForm({ ...form, description: e.target.value })} />
@@ -109,7 +134,7 @@ export default function StudentComplaints() {
                 </Field>
                 <label className="check" style={{ marginBottom: 16 }}>
                   <input type="checkbox" checked={form.anonymous} onChange={(e) => setForm({ ...form, anonymous: e.target.checked })} />
-                  <span>Submit <b>anonymously</b> — your identity will not be stored or visible to anyone, including the President and administrators.</span>
+                  <span>Submit <b>anonymously</b> — your name, matric number and phone will not be stored. (Faculty & department are still recorded so the Union can track problem areas.)</span>
                 </label>
                 <Button type="submit" disabled={busy || !form.category}>{busy ? 'Submitting…' : 'Submit complaint'}</Button>
               </form>

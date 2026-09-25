@@ -12,6 +12,7 @@ const flow = createCaseFlow({
 export async function submitReport(input: {
   title: string; description: string; category: string;
   priority?: 'low' | 'medium' | 'high' | 'urgent';
+  matric_no?: string; faculty?: string; department?: string; phone?: string;
 }) {
   const admin = await getCurrentAdministration();
   if (!admin) throw new Error('No current administration is active. Please try again later.');
@@ -24,6 +25,10 @@ export async function submitReport(input: {
     description: input.description.trim(),
     category: input.category,
     priority: input.priority ?? 'medium',
+    matric_no: input.matric_no?.trim() || null,
+    faculty: input.faculty?.trim() || null,
+    department: input.department?.trim() || null,
+    phone: input.phone?.trim() || null,
   }).select('id, reference_number').single();
   if (error) throw error;
   return data as { id: string; reference_number: string };

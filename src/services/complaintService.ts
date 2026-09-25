@@ -1,3 +1,4 @@
+
 import { supabase } from '../lib/supabase';
 import { getCurrentAdministration } from './administrationService';
 import { createCaseFlow, currentUserId, type CaseSummary, type CaseDetail } from './caseFlow';
@@ -11,6 +12,7 @@ const flow = createCaseFlow({
 
 export async function submitIdentifiedComplaint(input: {
   title?: string; description: string; category: string; against?: string;
+  matric_no?: string; faculty?: string; department?: string; phone?: string;
 }) {
   const admin = await getCurrentAdministration();
   if (!admin) throw new Error('No current administration is active. Please try again later.');
@@ -23,6 +25,10 @@ export async function submitIdentifiedComplaint(input: {
     description: input.description.trim(),
     category: input.category,
     against: input.against?.trim() || null,
+    matric_no: input.matric_no?.trim() || null,
+    faculty: input.faculty?.trim() || null,
+    department: input.department?.trim() || null,
+    phone: input.phone?.trim() || null,
   }).select('id, reference_number').single();
   if (error) throw error;
   return data as { id: string; reference_number: string };
@@ -30,6 +36,7 @@ export async function submitIdentifiedComplaint(input: {
 
 export async function submitAnonymousComplaint(input: {
   title?: string; description: string; category: string; against?: string;
+  faculty?: string; department?: string;
 }) {
   const tracking_code = 'TRK-' + crypto.randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase();
   const { data, error } = await supabase.rpc('submit_anonymous_complaint', {
@@ -38,6 +45,8 @@ export async function submitAnonymousComplaint(input: {
     p_description: input.description.trim(),
     p_against: input.against?.trim() ?? '',
     p_tracking_code: tracking_code,
+    p_faculty: input.faculty?.trim() ?? '',
+    p_department: input.department?.trim() ?? '',
   });
   if (error) throw error;
   const rows = data as { complaint_id: string; reference_number: string; tracking_code: string }[];

@@ -5,10 +5,14 @@ import { currentUserId } from './caseFlow';
 export interface Suggestion {
   id: string; reference_number: string; title: string; description: string;
   status: string; response: string | null; is_anonymous: boolean;
+  faculty: string | null; department: string | null;
   submitter_id: string | null; created_at: string;
 }
 
-export async function submitSuggestion(input: { title: string; description: string; anonymous?: boolean }) {
+export async function submitSuggestion(input: {
+  title: string; description: string; anonymous?: boolean;
+  matric_no?: string; faculty?: string; phone?: string;
+}) {
   const admin = await getCurrentAdministration();
   if (!admin) throw new Error('No current administration is active. Please try again later.');
 
@@ -26,6 +30,9 @@ export async function submitSuggestion(input: { title: string; description: stri
   const { data, error } = await supabase.from('suggestions').insert({
     administration_id: admin.id, submitter_id: uid, is_anonymous: false,
     title: input.title.trim(), description: input.description.trim(),
+    matric_no: input.matric_no?.trim() || null,
+    faculty: input.faculty?.trim() || null,
+    phone: input.phone?.trim() || null,
   }).select('id, reference_number').single();
   if (error) throw error;
   return data as { id: string; reference_number: string };
