@@ -15,6 +15,7 @@ import EventsPublic from '../pages/public/EventsPublic';
 import Login from '../pages/auth/Login';
 import SetPassword from '../pages/auth/SetPassword';
 import ResetPassword from '../pages/auth/ResetPassword';
+import ForgotPassword from '../pages/auth/ForgotPassword';
 
 import NotFound from '../pages/NotFound';
 
@@ -77,7 +78,7 @@ export const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
   { path: '/auth/set-password', element: <SetPassword /> },
   { path: '/auth/reset-password', element: <ResetPassword /> },
-  { path: '/auth/forgot-password', element: <ResetPassword /> },
+  { path: '/auth/forgot-password', element: <ForgotPassword /> },
   { path: '/student/login', element: <Navigate to="/login" replace /> },
   { path: '/exco/login', element: <Navigate to="/login" replace /> },
   { path: '/vp/login', element: <Navigate to="/login" replace /> },
