@@ -22,7 +22,7 @@ export interface InviteOfficerResult {
 }
 
 export async function inviteOfficer(input: InviteOfficerInput): Promise<InviteOfficerResult> {
-  const { data, error } = await supabase.functions.invoke('invite-officer', { body: input });
+  const { data, error } = await supabase.functions.invoke('smart-service', { body: input });
   if (error) throw new Error(error.message);
   if (data?.error) throw new Error(data.error);
   return data as InviteOfficerResult;
